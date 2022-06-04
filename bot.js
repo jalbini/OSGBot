@@ -40,55 +40,38 @@ function voiceInit() {
     });
 
     connection.on(VoiceConnectionStatus.Ready, () => {
-      console.log('Ready to blast music!');
+      console.log('Connected to voice channel');
     });
 
     connection.on(VoiceConnectionStatus.Destroyed, () => {
-      console.log('Stopping music...');
+      console.log('Disconnected from voice channel');
     });
 
-    player.on('idle', () => {
-      console.log("Music has finished playing, shuffling music...")
-      playAudio();
-    })
-
-    playAudio();
     connection.subscribe(player);
   })
 }
 
-function playAudio() {
-
-  let files = fs.readdirSync(join(__dirname,'music'));
-
-  while (true) {
-    audio = files[Math.floor(Math.random() * files.length)];
-    console.log('Searching .mp3 file...');
-    if (audio.endsWith('.mp3')) {
-      break;
-    }
-  }
-
-  let resource = createAudioResource(join(__dirname, 'music/' + audio));
+function playAudio(filename, volume=0.5) {
+  let resource = createAudioResource(join(__dirname, 'music/' + filename + '.mp3'), { inlineVolume: true });
+  resource.volume.setVolume(volume);
 
   player.play(resource);
 
-  console.log('Now playing: ' + audio);
+  console.log('Now playing: ' + filename);
   if (txtFile === true) {
-    fileData = "Now Playing: " + audio;
+    fileData = "Now Playing: " + filename;
     fs.writeFile("now-playing.txt", fileData, (err) => {
       if (err)
         console.log(err);
     });
   }
   const statusEmbed = new Discord.MessageEmbed()
-      .addField('Now Playing', `${audio}`)
+      .addField('Now Playing', `${filename}`)
       .setColor('#0066ff')
 
   let statusChannel = bot.channels.cache.get(config.statusChannel);
   if (!statusChannel) return console.error('The status channel does not exist! Skipping.');
   statusChannel.send({embeds: [statusEmbed]});
-
 }
 
 bot.on('ready', () => {
@@ -121,7 +104,7 @@ bot.on('ready', () => {
 
   let statusChannel = bot.channels.cache.get(config.statusChannel);
   if (!statusChannel) return console.error('The status channel does not exist! Skipping.');
-  statusChannel.send({ embeds: [readyEmbed]});
+  // statusChannel.send({ embeds: [readyEmbed]});
 
   voiceInit();
 
@@ -155,6 +138,10 @@ bot.on('messageCreate', async msg => {
 
   if (command === 'git') {
     msg.reply('This is the source code of this project.\nhttps://github.com/Alee14/DLMP3');
+  }
+
+  if (command === 'homerun') {
+    playAudio('homerun', 0.4);
   }
 
   if (command === 'playing') {
@@ -204,7 +191,6 @@ bot.on('messageCreate', async msg => {
     player.stop();
     const connection = getVoiceConnection(msg.guild.id);
     connection.destroy();
-
   }
 
   if (command === 'stop') {
