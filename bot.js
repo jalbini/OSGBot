@@ -123,7 +123,7 @@ bot.on('messageCreate', async msg => {
     const helpEmbed = new Discord.MessageEmbed()
       .setAuthor({name:`${bot.user.username} Help`, iconURL:bot.user.avatarURL()})
       .setDescription(`Currently playing \`${audio}\`.`)
-      .addField('Public Commands', `${config.prefix}help\n${config.prefix}ping\n${config.prefix}git\n${config.prefix}playing\n${config.prefix}about\n`, true)
+      .addField('Public Commands', `${config.prefix}help\n${config.prefix}ping\n${config.prefix}git\n${config.prefix}playing\n`, true)
       .addField('Bot Owner Only', `${config.prefix}join\n${config.prefix}resume\n${config.prefix}pause\n${config.prefix}skip\n${config.prefix}leave\n${config.prefix}stop\n`, true)
       .setFooter({text:'© Copyright 2022 Andrew Lee. Licensed with GPL-3.0.'})
       .setColor('#0066ff')
@@ -132,12 +132,8 @@ bot.on('messageCreate', async msg => {
 
   }
 
-  if (command === 'ping') {
-    msg.reply('Pong!');
-  }
-
   if (command === 'git') {
-    msg.reply('This is the source code of this project.\nhttps://github.com/Alee14/DLMP3');
+    msg.reply('https://github.com/jalbini/OSGBot');
   }
 
   if (command === 'homerun') {
@@ -148,10 +144,6 @@ bot.on('messageCreate', async msg => {
     msg.channel.send('Currently playing `' + audio + '`.');
   }
   
-  if (command === 'about') {
-    msg.channel.send('The bot code was created by Andrew Lee (Alee#4277). Written in Discord.JS and licensed with GPL-3.0.');
-  }
-
   if (![config.botOwner].includes(msg.author.id)) return;
 
   // Bot owner exclusive
